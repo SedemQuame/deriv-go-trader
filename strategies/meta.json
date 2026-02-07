@@ -1,0 +1,12 @@
+{
+  "dbot-strategy.js": {
+    "tags": [
+      "dbot"
+    ]
+  },
+  "ticks-save.js": {
+    "tags": [
+      "dbot"
+    ]
+  }
+}

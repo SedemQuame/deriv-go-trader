@@ -1,0 +1,6 @@
+{
+  "deriv_api_token": "YOUR_DERIV_API_TOKEN",
+  "mongo_uri": "mongodb://localhost:27017",
+  "openai_key": "YOUR_OPENAI_API_KEY",
+  "openai_model": "gpt-4"
+}

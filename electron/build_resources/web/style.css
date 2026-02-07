@@ -1,0 +1,488 @@
+/* ============================================
+   DERIV TRADER - CUSTOM THEME STYLES
+   Matching Deriv.com UI Design
+   ============================================ */
+
+/* ---------- LIGHT MODE (Default) ---------- */
+:root,
+[data-bs-theme="light"] {
+    /* Core Backgrounds */
+    --bg-main: #f2f3f4;
+    --bg-panel: #ffffff;
+    --bg-nav: #ffffff;
+    --bg-input: #ffffff;
+
+    /* Text Colors */
+    --text-primary: #333333;
+    --text-secondary: #999999;
+    --text-muted: #c2c2c2;
+
+    /* Brand Colors - Deriv Palette */
+    --color-red: #ec3f3f;
+    --color-red-hover: #d63636;
+    --color-green: #4bb4b3;
+    --color-green-hover: #3fa5a4;
+    --color-blue: #377cfc;
+    --color-blue-hover: #2563eb;
+
+    /* UI Elements */
+    --border-color: #e6e9e9;
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --radius: 4px;
+
+    /* Chart Colors for Light Mode */
+    --chart-grid: #e6e9e9;
+    --chart-text: #999999;
+    --chart-line: #2a3052;
+
+    /* Bootstrap Overrides */
+    --bs-body-bg: var(--bg-main);
+    --bs-body-color: var(--text-primary);
+    --bs-border-color: var(--border-color);
+}
+
+/* ---------- DARK MODE ---------- */
+[data-bs-theme="dark"] {
+    /* Core Backgrounds */
+    --bg-main: #0e0e0e;
+    --bg-panel: #151717;
+    --bg-nav: #151717;
+    --bg-input: #232525;
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #c2c2c2;
+    --text-muted: #6e6e6e;
+
+    /* Brand Colors - Same as Light */
+    --color-red: #ec3f3f;
+    --color-red-hover: #d63636;
+    --color-green: #4bb4b3;
+    --color-green-hover: #3fa5a4;
+    --color-blue: #377cfc;
+    --color-blue-hover: #2563eb;
+
+    /* UI Elements */
+    --border-color: #323738;
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    /* Chart Colors for Dark Mode */
+    --chart-grid: #323738;
+    --chart-text: #c2c2c2;
+    --chart-line: #85acf4;
+
+    /* Bootstrap Overrides */
+    --bs-body-bg: var(--bg-main);
+    --bs-body-color: var(--text-primary);
+    --bs-border-color: var(--border-color);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+body {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   NAVBAR - Clean Top Bar
+   ============================================ */
+.navbar {
+    background-color: var(--bg-nav) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+    color: var(--text-primary) !important;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.navbar-brand i {
+    color: var(--color-red) !important;
+}
+
+/* ============================================
+   CARDS / PANELS - Clean White Boxes
+   ============================================ */
+.card {
+    background-color: var(--bg-panel) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-card);
+}
+
+.card-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.card-body {
+    padding: 1.25rem;
+    color: var(--text-primary);
+}
+
+.card-title {
+    color: var(--text-primary) !important;
+}
+
+.card-subtitle,
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   BUTTONS - Deriv Style
+   ============================================ */
+.btn {
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    border: none;
+    transition: all 0.15s ease;
+}
+
+/* Green Button (Start/Success) */
+.btn-success {
+    background-color: var(--color-green) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background-color: var(--color-green-hover) !important;
+}
+
+/* Red Button (Stop/Danger) */
+.btn-danger {
+    background-color: var(--color-red) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    background-color: var(--color-red-hover) !important;
+}
+
+/* Primary Button (Refresh/Actions) */
+.btn-primary {
+    background-color: var(--color-blue) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--color-blue-hover) !important;
+}
+
+/* Outline Buttons */
+.btn-outline-secondary,
+.btn-outline-info,
+.btn-outline-warning {
+    background-color: transparent !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-info:hover,
+.btn-outline-warning:hover {
+    background-color: var(--bg-main) !important;
+    border-color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   FORM CONTROLS
+   ============================================ */
+.form-control,
+.form-select {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--color-blue) !important;
+    box-shadow: 0 0 0 2px rgba(55, 124, 252, 0.15) !important;
+}
+
+.form-label {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--color-blue);
+    border-color: var(--color-blue);
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+    border-radius: var(--radius);
+}
+
+.badge.bg-success,
+.bg-success {
+    background-color: var(--color-green) !important;
+}
+
+.badge.bg-danger,
+.bg-danger {
+    background-color: var(--color-red) !important;
+}
+
+.badge.bg-secondary {
+    background-color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   TABS - Deriv Style Underline
+   ============================================ */
+.nav-tabs {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-tabs .nav-link {
+    color: var(--text-secondary);
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    background: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--text-primary);
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--text-primary);
+    background: transparent;
+    border-color: transparent;
+    border-bottom: 2px solid var(--color-red);
+    font-weight: 600;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+.table {
+    color: var(--text-primary);
+}
+
+.table thead th {
+    background-color: var(--bg-main);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.table tbody td {
+    border-color: var(--border-color);
+    vertical-align: middle;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-bs-theme="dark"] .table-striped>tbody>tr:nth-of-type(odd)>* {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* ============================================
+   LOG CONTAINER - Terminal Style
+   ============================================ */
+#logContainer {
+    background-color: #0e0e0e !important;
+    border-radius: var(--radius);
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.8rem;
+    color: #e0e0e0;
+}
+
+.log-entry.info {
+    color: #85acf4;
+}
+
+.log-entry.success {
+    color: #00d0a3;
+}
+
+.log-entry.error {
+    color: #ff444f;
+}
+
+.log-entry.system {
+    color: #999999;
+}
+
+/* ============================================
+   THEME TOGGLE BUTTON
+   ============================================ */
+.theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius);
+    color: var(--text-secondary) !important;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ============================================
+   CONNECTION STATUS
+   ============================================ */
+#connectionDot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50%;
+}
+
+#connectionDot.bg-success {
+    background-color: var(--color-green) !important;
+    box-shadow: 0 0 6px var(--color-green);
+}
+
+#connectionDot.bg-danger {
+    background-color: var(--color-red) !important;
+}
+
+/* ============================================
+   LIST GROUPS
+   ============================================ */
+.list-group-item {
+    background-color: transparent !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   MODALS
+   ============================================ */
+.modal-content {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+}
+
+.modal-header {
+    border-bottom-color: var(--border-color);
+}
+
+.modal-footer {
+    border-top-color: var(--border-color);
+}
+
+.modal-title {
+    color: var(--text-primary);
+}
+
+.btn-close {
+    filter: var(--bs-btn-close-white-filter);
+}
+
+[data-bs-theme="light"] .btn-close {
+    filter: none;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.text-success {
+    color: var(--color-green) !important;
+}
+
+.text-danger {
+    color: var(--color-red) !important;
+}
+
+.text-primary {
+    color: var(--text-primary) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.bg-body-tertiary {
+    background-color: var(--bg-main) !important;
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+.spin-anim {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

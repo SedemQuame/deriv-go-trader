@@ -1,0 +1,60 @@
+{
+    "name": "deriv-go-trader-desktop",
+    "version": "1.0.0",
+    "description": "Deriv Trading Bot Desktop App",
+    "homepage": "https://github.com/sedemquame/deriv-go-trader",
+    "author": {
+        "name": "Sedem Quame",
+        "email": "sedem@example.com"
+    },
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
+    },
+    "build": {
+        "appId": "com.deriv.trader",
+        "productName": "Deriv Trader",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "main.js",
+            "package.json"
+        ],
+        "mac": {
+            "category": "public.app-category.finance"
+        },
+        "win": {
+            "target": "nsis"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "perMachine": false
+        },
+        "linux": {
+            "target": [
+                "AppImage",
+                "deb"
+            ],
+            "category": "Finance",
+            "maintainer": "Sedem Quame <sedem@example.com>"
+        },
+        "extraResources": [
+            {
+                "from": "build_resources/",
+                "to": ".",
+                "filter": [
+                    "**/*"
+                ]
+            }
+        ]
+    },
+    "devDependencies": {
+        "electron": "^29.0.0",
+        "electron-builder": "^24.13.3"
+    },
+    "dependencies": {}
+}

@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Deriv Trader Color Palette - Light Mode (Default) */
+:root,
+[data-theme="light"] {
+  /* Backgrounds */
+  --background: #ffffff;
+  --background-secondary: #f8f9fa;
+  --background-tertiary: #f0f1f2;
+  --background-nav: rgba(255, 255, 255, 0.95);
+
+  /* Text */
+  --foreground: #0e0e0e;
+  --foreground-secondary: #555555;
+  --foreground-muted: #999999;
+
+  /* Brand Colors */
+  --deriv-red: #ff444f;
+  --deriv-red-hover: #eb3e48;
+
+  /* Action Colors */
+  --primary: #00a79e;
+  --primary-hover: #00b8ae;
+  --primary-dark: #008f87;
+  --primary-text: #ffffff;
+
+  /* Status Colors */
+  --success: #00a79e;
+  --error: #ff444f;
+  --warning: #ff9800;
+
+  /* Borders */
+  --border: #e0e0e0;
+  --border-light: #eeeeee;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Deriv Trader Color Palette - Dark Mode */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --background: #0e0e0e;
+  --background-secondary: #1d1d1d;
+  --background-tertiary: #242424;
+  --background-nav: rgba(14, 14, 14, 0.95);
+
+  /* Text */
+  --foreground: #ffffff;
+  --foreground-secondary: #c2c2c2;
+  --foreground-muted: #6e6e6e;
+
+  /* Brand Colors */
+  --deriv-red: #ff444f;
+  --deriv-red-hover: #eb3e48;
+
+  /* Action Colors */
+  --primary: #4bb4b3;
+  --primary-hover: #5cc5c4;
+  --primary-dark: #00a79e;
+  --primary-text: #0e0e0e;
+
+  /* Status Colors */
+  --success: #4bb4b3;
+  --error: #ff444f;
+  --warning: #ffad3a;
+
+  /* Borders */
+  --border: #323232;
+  --border-light: #424242;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-deriv-red: var(--deriv-red);
+  --color-deriv-red-hover: var(--deriv-red-hover);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-dark: var(--primary-dark);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth transitions for theme switching */
+*,
+*::before,
+*::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}

@@ -1,0 +1,47 @@
+
+<xml xmlns="http://www.w3.org/1999/xhtml" collection="false">
+  <block type="trade_definition" id="Df7t$0zM5?2F]e}jjD2m" x="20" y="20">
+    <value name="TRADETYPE">
+      <shadow type="text">
+        <field name="TEXT">rise</field>
+      </shadow>
+    </value>
+    <value name="MARKET">
+      <shadow type="text">
+        <field name="TEXT">v100</field>
+      </shadow>
+    </value>
+    <value name="CANDLEINTERVAL">
+      <shadow type="text">
+        <field name="TEXT">1s</field>
+      </shadow>
+    </value>
+    <value name="RESTARTBUYSELL">
+      <shadow type="math_number">
+        <field name="NUM">1</field>
+      </shadow>
+    </value>
+    <value name="RESTARTONERROR">
+      <shadow type="math_number">
+        <field name="NUM">1</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="before_purchase" id="T:x]UiIY3tY-Fo=$+}Qt" x="20" y="220">
+    <statement name="statement">
+      <block type="purchase" id="I9Hhk+Hc[c|i?.]9lzrM">
+        <value name="BET">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="during_purchase" id="iKFi8fH+n~hCO3;z?3p~" x="20" y="420"></block>
+  <block type="after_purchase" id=")1{+ZV}7e4_Jx$Sg^_X_" x="20" y="620">
+    <statement name="statement">
+      <block type="trade_again" id="]&-wRGpI:z_e)Nzmu9px"></block>
+    </statement>
+  </block>
+</xml>

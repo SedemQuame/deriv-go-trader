@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Deriv-inspired (light) */
+    --background: 0 0% 100%;
+    --foreground: 221 39% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 221 39% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 221 39% 11%;
+
+    --primary: 357 100% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 221 39% 11%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 218 11% 65%;
+
+    --accent: 220 14% 96%;
+    --accent-foreground: 221 39% 11%;
+
+    --destructive: 357 100% 65%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 357 100% 65%;
+
+    --radius: 12px;
+
+    /* Custom tokens */
+    --glow-primary: 357 100% 65%;
+    --surface-elevated: 220 14% 98%;
+    --surface-glass: 220 14% 96%;
+    --text-dim: 218 11% 65%;
+    --grid-color: 220 13% 91%;
+    --success: 142 70% 45%;
+    --chart-line: 357 100% 65%;
+
+    /* Chart palette */
+    --chart-1: 357 100% 65%;
+    --chart-2: 213 29% 20%;
+    --chart-3: 221 39% 35%;
+    --chart-4: 220 14% 70%;
+    --chart-5: 0 0% 20%;
+
+    /* Sidebar */
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 221 39% 11%;
+    --sidebar-primary: 357 100% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 221 39% 11%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 357 100% 65%;
+  }
+
+  .dark {
+    /* Deriv-inspired (dark) */
+    --background: 213 29% 6%;
+    --foreground: 0 0% 100%;
+
+    --card: 221 39% 11%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 221 39% 11%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 357 100% 65%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 221 25% 16%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 221 25% 16%;
+    --muted-foreground: 218 11% 65%;
+
+    --accent: 221 25% 16%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 357 100% 65%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 221 25% 20%;
+    --input: 221 25% 18%;
+    --ring: 357 100% 65%;
+
+    /* Custom tokens */
+    --glow-primary: 357 100% 65%;
+    --surface-elevated: 221 39% 13%;
+    --surface-glass: 221 39% 11%;
+    --text-dim: 218 11% 55%;
+    --grid-color: 221 25% 16%;
+    --success: 142 70% 45%;
+    --chart-line: 357 100% 65%;
+
+    /* Chart palette */
+    --chart-1: 357 100% 65%;
+    --chart-2: 218 11% 65%;
+    --chart-3: 220 14% 96%;
+    --chart-4: 213 29% 20%;
+    --chart-5: 0 0% 100%;
+
+    /* Sidebar */
+    --sidebar: 213 29% 6%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 357 100% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 221 25% 16%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 221 25% 20%;
+    --sidebar-ring: 357 100% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+}
+
+@layer components {
+  /* Grid background pattern */
+  .grid-pattern {
+    background-image: 
+      linear-gradient(to right, hsl(var(--grid-color) / 0.3) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--grid-color) / 0.3) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* Glassmorphic card */
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-xl;
+    box-shadow: 
+      0 4px 24px -1px hsl(var(--background) / 0.5),
+      inset 0 1px 0 0 hsl(var(--foreground) / 0.03);
+  }
+
+  /* Primary button with glow */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-semibold px-6 py-3 rounded-lg transition-all duration-300;
+    box-shadow: 0 0 20px hsl(var(--glow-primary) / 0.3);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 30px hsl(var(--glow-primary) / 0.5);
+    @apply scale-[1.02];
+  }
+
+  /* Secondary/outline button */
+  .btn-secondary {
+    @apply bg-transparent border border-border text-foreground font-medium px-6 py-3 rounded-lg transition-all duration-300;
+  }
+
+  .btn-secondary:hover {
+    @apply border-primary/50 bg-primary/5;
+  }
+
+  /* Status badge */
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+    background: hsl(var(--success) / 0.15);
+    color: hsl(var(--success));
+  }
+
+  .status-badge::before {
+    content: '';
+    @apply w-1.5 h-1.5 rounded-full animate-pulse;
+    background: hsl(var(--success));
+  }
+
+  /* Section container */
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Heading styles */
+  .heading-xl {
+    @apply text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight;
+  }
+
+  .heading-lg {
+    @apply text-3xl sm:text-4xl font-bold tracking-tight;
+  }
+
+  .heading-md {
+    @apply text-xl sm:text-2xl font-semibold;
+  }
+
+  /* Code/mono text */
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 100%);
+  }
+
+  /* Accent underline */
+  .accent-underline {
+    @apply relative;
+  }
+
+  .accent-underline::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 w-full h-0.5 rounded-full;
+    background: linear-gradient(90deg, hsl(var(--primary)), transparent);
+  }
+
+  /* Feature card hover */
+  .feature-card {
+    @apply glass-card p-6 transition-all duration-300;
+  }
+
+  .feature-card:hover {
+    @apply border-primary/30;
+    box-shadow: 0 0 40px hsl(var(--glow-primary) / 0.1);
+  }
+
+  /* Pricing card highlight */
+  .pricing-card {
+    @apply glass-card relative overflow-hidden;
+  }
+
+  .pricing-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.1) 0%, transparent 50%);
+  }
+
+  .pricing-card:hover::before {
+    @apply opacity-100;
+  }
+}
+
+/* Keyframe animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes chart-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-text {
+  background: linear-gradient(90deg, hsl(var(--foreground)), hsl(var(--primary)), hsl(var(--foreground)), hsl(var(--primary)));
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-chart-draw {
+  stroke-dasharray: 1000;
+  animation: chart-draw 3s ease-out forwards;
+}

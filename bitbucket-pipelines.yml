@@ -1,0 +1,29 @@
+image: node:18
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Deploy Sales Site to Heroku
+          # Only run this step if changes occurred in sales-site or this pipeline file
+          condition:
+            changesets:
+              includePaths:
+                - "sales-site/**"
+                - "bitbucket-pipelines.yml"
+          script:
+            - echo "Deploying sales-site to Heroku..."
+            # Create a temporary directory for deployment
+            - mkdir deploy_temp
+            - cp -r sales-site/* deploy_temp/
+            - cp sales-site/.env.local deploy_temp/ || true # Copy env if strictly needed for build, though Heroku uses Config Vars
+            - cd deploy_temp
+            # Initialize a new git repo to push just this content
+            - git init
+            - git config user.name "sedem"
+            - git config user.email "sedem.quame.a@gmail.com"
+            - git add .
+            - git commit -m "Deploy from Bitbucket Pipeline"
+            # Push to Heroku
+            # HEROKU_API_KEY and HEROKU_APP_NAME must be set in Repository variables
+            - git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master:main

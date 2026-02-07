@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deriv Trading Dashboard</title>
+    <meta name="description" content="Real-time trading dashboard for Deriv automated trading strategies">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="style.css?v=3">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('deriv-theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            } else {
+                // Default to light mode
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg mb-4 shadow" id="mainNavbar">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <i class="bi bi-graph-up-arrow text-primary"></i>
+                <span class="fw-bold">Deriv Trader</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- Status Badge -->
+                    <li class="nav-item d-flex align-items-center">
+                        <span class="badge rounded-pill bg-danger d-flex align-items-center gap-1 ms-lg-3"
+                            id="botStatusBadge">
+                            <span class="spinner-grow spinner-grow-sm d-none" role="status" aria-hidden="true"
+                                id="statusSpinner"></span>
+                            <span id="botStatusText">Stopped</span>
+                        </span>
+                    </li>
+                </ul>
+
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+                    <select id="strategyFilter" class="form-select form-select-sm" style="width: auto;">
+                        <option value="">All Strategies</option>
+                        <option value="even_odd">Even/Odd</option>
+                        <option value="rise_fall">Rise/Fall</option>
+                        <option value="differs">Digit Differs</option>
+                        <option value="higher_lower">Higher/Lower</option>
+                        <option value="multiplier">Multiplier</option>
+                        <option value="custom">Custom (JS)</option>
+                    </select>
+
+                    <button id="openEditorBtn" class="btn btn-sm btn-outline-warning">
+                        <i class="bi bi-code-slash"></i> Editor
+                    </button>
+
+                    <button id="guideBtn" class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
+                        data-bs-target="#guideModal">
+                        <i class="bi bi-question-circle"></i> Help
+                    </button>
+
+                    <button id="settingsBtn" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                        data-bs-target="#settingsModal">
+                        <i class="bi bi-gear-fill"></i> Settings
+                    </button>
+
+                    <button id="themeToggleBtn" class="theme-toggle-btn me-2" title="Toggle Theme">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+
+                    <button id="refreshBtn" class="btn btn-sm btn-primary">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+
+                    <div class="d-flex align-items-center gap-1 ms-2" id="connectionStatus">
+                        <span class="p-1 rounded-circle bg-danger" id="connectionDot"
+                            style="width: 10px; height: 10px;"></span>
+                        <small class="text-secondary" id="connectionText">Disconnected</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="dashboardView" class="container-fluid px-4">
+        <!-- Top Stats Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted text-uppercase small">Total PnL</h6>
+                        <h2 class="card-title fw-bold" id="totalPnL">$0.00</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted text-uppercase small">Total Trades</h6>
+                        <h2 class="card-title fw-bold" id="totalTrades">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted text-uppercase small">Win Rate</h6>
+                        <h2 class="card-title fw-bold" id="winRate">0%</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted text-uppercase small">Avg Profit</h6>
+                        <h2 class="card-title fw-bold" id="avgProfit">$0.00</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left Column: Controls & Live Status -->
+            <div class="col-12 col-lg-4">
+                <!-- Control Panel -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-transparent py-3">
+                        <h5 class="card-title mb-0"><i class="bi bi-cpu"></i> Bot Control</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Strategy</label>
+                                <select id="configStrategy" class="form-select">
+                                    <option value="even_odd">Even/Odd</option>
+                                    <option value="rise_fall">Rise/Fall</option>
+                                    <option value="differs">Digit Differs</option>
+                                    <option value="higher_lower">Higher/Lower</option>
+                                    <option value="multiplier">Multiplier</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Symbol</label>
+                                <select id="configSymbol" class="form-select">
+                                    <optgroup label="Volatility Indices">
+                                        <option value="R_10">Volatility 10 Index</option>
+                                        <option value="R_25">Volatility 25 Index</option>
+                                        <option value="R_50">Volatility 50 Index</option>
+                                        <option value="R_75">Volatility 75 Index</option>
+                                        <option value="R_100">Volatility 100 Index</option>
+                                    </optgroup>
+                                    <optgroup label="Volatility (1s) Indices">
+                                        <option value="1HZ10V">Volatility 10 (1s) Index</option>
+                                        <option value="1HZ15V">Volatility 15 (1s) Index</option>
+                                        <option value="1HZ25V">Volatility 25 (1s) Index</option>
+                                        <option value="1HZ30V">Volatility 30 (1s) Index</option>
+                                        <option value="1HZ50V">Volatility 50 (1s) Index</option>
+                                        <option value="1HZ75V">Volatility 75 (1s) Index</option>
+                                        <option value="1HZ90V">Volatility 90 (1s) Index</option>
+                                        <option value="1HZ100V">Volatility 100 (1s) Index</option>
+                                    </optgroup>
+                                    <optgroup label="Crash/Boom">
+                                        <option value="BOOM300">Boom 300 Index</option>
+                                        <option value="BOOM500">Boom 500 Index</option>
+                                        <option value="BOOM600">Boom 600 Index</option>
+                                        <option value="BOOM900">Boom 900 Index</option>
+                                        <option value="BOOM1000">Boom 1000 Index</option>
+                                        <option value="CRASH300">Crash 300 Index</option>
+                                        <option value="CRASH500">Crash 500 Index</option>
+                                        <option value="CRASH600">Crash 600 Index</option>
+                                        <option value="CRASH900">Crash 900 Index</option>
+                                        <option value="CRASH1000">Crash 1000 Index</option>
+                                    </optgroup>
+                                    <optgroup label="Jump Indices">
+                                        <option value="JD10">Jump 10 Index</option>
+                                        <option value="JD25">Jump 25 Index</option>
+                                        <option value="JD50">Jump 50 Index</option>
+                                        <option value="JD75">Jump 75 Index</option>
+                                        <option value="JD100">Jump 100 Index</option>
+                                    </optgroup>
+                                    <optgroup label="Daily Reset Indices">
+                                        <option value="RDBEAR">Bear Market Index</option>
+                                        <option value="RDBULL">Bull Market Index</option>
+                                    </optgroup>
+                                    <optgroup label="Step Indices">
+                                        <option value="STEP">Step Index</option>
+                                        <option value="STEP100">Step Index 100</option>
+                                        <option value="STEP200">Step Index 200</option>
+                                    </optgroup>
+                                    <optgroup label="Range Break Indices">
+                                        <option value="RANGE100">Range Break 100 Index</option>
+                                        <option value="RANGE200">Range Break 200 Index</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label">Stake ($)</label>
+                                <input type="number" id="configInitialStake" class="form-control" value="0.35"
+                                    step="0.01" min="0.35">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Target ($)</label>
+                                <input type="number" id="configTargetProfit" class="form-control" value="30" step="1"
+                                    min="1">
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label">Stop Loss ($)</label>
+                                <input type="number" id="configStopLoss" class="form-control" value="20" step="1"
+                                    min="1">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Martingale</label>
+                                <input type="number" id="configMartingale" class="form-control" value="1.0" step="0.1"
+                                    min="1">
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label">Duration</label>
+                                <input type="number" id="configDuration" class="form-control" value="2" min="1">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Unit</label>
+                                <select id="configDurationUnit" class="form-select">
+                                    <option value="t">Ticks</option>
+                                    <option value="s">Seconds</option>
+                                    <option value="m">Minutes</option>
+                                </select>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label">Streak</label>
+                                <input type="number" id="configStreakThreshold" class="form-control" value="1" min="1">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Barrier</label>
+                                <input type="text" id="configBarrier" class="form-control" placeholder="Optional">
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="configUseTrailingStop" checked>
+                                    <label class="form-check-label" for="configUseTrailingStop">Tracking Stop
+                                        Loss</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4 d-flex gap-2">
+                                <button id="startBotBtn" class="btn btn-success flex-grow-1">
+                                    <i class="bi bi-play-fill"></i> Start
+                                </button>
+                                <button id="stopBotBtn" class="btn btn-danger flex-grow-1" disabled>
+                                    <i class="bi bi-stop-fill"></i> Stop
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Status -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-transparent py-3">
+                        <h5 class="card-title mb-0"><i class="bi bi-activity"></i> Live Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group list-group-flush">
+                            <div
+                                class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">Strategy</span>
+                                <span class="fw-bold" id="liveStrategy">-</span>
+                            </div>
+                            <div
+                                class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">PnL</span>
+                                <span class="fw-bold" id="livePnL">$0.00</span>
+                            </div>
+                            <div
+                                class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">Trades</span>
+                                <span id="liveTrades">0</span>
+                            </div>
+                            <div
+                                class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">Stake</span>
+                                <span id="liveStake">$0.00</span>
+                            </div>
+                            <div
+                                class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">Balance</span>
+                                <span id="liveBalance">$0.00</span>
+                            </div>
+                            <div
+                                class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                <span class="text-muted">Runtime</span>
+                                <span class="font-monospace" id="liveRuntime">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Charts & Tables -->
+            <div class="col-12 col-lg-8">
+                <!-- Charts -->
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-md-6">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div
+                                class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">PnL History</h6>
+                                <span class="badge bg-secondary">Last 50</span>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 250px;">
+                                    <canvas id="pnlChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div
+                                class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Win/Loss</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 250px;">
+                                    <canvas id="winLossChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-transparent py-3">
+                                <h6 class="mb-0">Profit Distribution</h6>
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 200px;">
+                                    <canvas id="profitDistChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs & Trades Tabs -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-transparent">
+                        <ul class="nav nav-tabs card-header-tabs" id="dataTabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab"
+                                    data-bs-target="#logsTab">Logs</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tradesTab">Recent
+                                    Trades</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab"
+                                    data-bs-target="#sessionsTab">Sessions</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#journalTab"><i
+                                        class="bi bi-journal-text me-1"></i> Journal</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#analyticsTab"><i
+                                        class="bi bi-graph-up-arrow me-1"></i> Analytics & AI</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="tab-content">
+                            <!-- Logs -->
+                            <div class="tab-pane fade show active" id="logsTab">
+                                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small">System Events</span>
+                                    <div class="d-flex gap-2">
+                                        <a href="/api/logs/download" target="_blank"
+                                            class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-download"></i> Save Logs
+                                        </a>
+                                        <button id="clearLogsBtn"
+                                            class="btn btn-sm btn-link text-decoration-none">Clear</button>
+                                    </div>
+                                </div>
+                                <div id="logContainer" class="bg-black text-monospace p-3 overflow-auto"
+                                    style="height: 400px; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+                                    <div class="text-muted">System ready...</div>
+                                </div>
+                            </div>
+
+                            <!-- Trades -->
+                            <div class="tab-pane fade" id="tradesTab">
+                                <div class="p-3 border-bottom d-flex justify-content-end">
+                                    <a href="/api/trades/export" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+                                    </a>
+                                </div>
+                                <div class="table-responsive" style="max-height: 450px;">
+                                    <table class="table table-hover table-striped align-middle mb-0">
+                                        <thead class="table-light sticky-top">
+                                            <tr>
+                                                <th>Time</th>
+                                                <th>Strategy</th>
+                                                <th>Type</th>
+                                                <th>Stake</th>
+                                                <th>Profit</th>
+                                                <th>Total PnL</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tradesBody">
+                                            <tr>
+                                                <td colspan="7" class="text-center py-4 text-muted">No trades found</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Sessions -->
+                            <div class="tab-pane fade" id="sessionsTab">
+                                <div class="p-3" id="sessionsList" style="max-height: 450px; overflow-y: auto;">
+                                    <p class="text-center text-muted">Loading sessions...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Journal -->
+                    <div class="tab-pane fade" id="journalTab">
+                        <div class="d-flex flex-column" style="height: 450px;">
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Trading Journal</h6>
+                                <button id="newJournalBtn" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-plus-lg"></i> New Entry
+                                </button>
+                            </div>
+                            <div id="journalList" class="flex-grow-1 overflow-auto p-3">
+                                <div class="text-center text-muted">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics & AI -->
+                    <div class="tab-pane fade" id="analyticsTab">
+                        <div class="container-fluid p-3 h-100 overflow-auto" style="height: 450px;">
+                            <div class="row g-3">
+                                <!-- Charts Column -->
+                                <div class="col-md-7">
+                                    <div class="card mb-3 shadow-sm">
+                                        <div class="card-header bg-transparent py-2">
+                                            <h6 class="mb-0 small fw-bold">Account Cash Flow</h6>
+                                        </div>
+                                        <div class="card-body p-2" style="height: 250px;">
+                                            <canvas id="cashFlowChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-transparent py-2">
+                                            <h6 class="mb-0 small fw-bold">Performance Metrics</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row g-3 text-center" id="analyticsMetrics">
+                                                <div class="col-3">
+                                                    <div class="text-muted small">Win Rate</div>
+                                                    <div class="fw-bold" id="metricWinRate">-</div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="text-muted small">Profit Factor</div>
+                                                    <div class="fw-bold" id="metricProfitFactor">-</div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="text-muted small">Avg Win</div>
+                                                    <div class="fw-bold text-success" id="metricAvgWin">-</div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="text-muted small">Avg Loss</div>
+                                                    <div class="fw-bold text-danger" id="metricAvgLoss">-</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Analyst Column -->
+                                <div class="col-md-5">
+                                    <div class="card h-100 shadow-sm border-primary">
+                                        <div
+                                            class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0"><i class="bi bi-robot me-2"></i>AI Analyst</h6>
+                                            <span class="badge bg-light text-primary small">GPT-3.5</span>
+                                        </div>
+                                        <div class="card-body d-flex flex-column p-0">
+                                            <div id="aiChatOutput" class="flex-grow-1 p-3 overflow-auto"
+                                                style="height: 250px; background-color: rgba(var(--bs-body-bg-rgb), 0.5);">
+                                                <div class="text-muted text-center mt-4">
+                                                    <i class="bi bi-stars fs-1 mb-2"></i>
+                                                    <p>Ready to analyze your trading data.</p>
+                                                </div>
+                                            </div>
+                                            <div class="p-3 border-top custom-input-area">
+                                                <div class="input-group">
+                                                    <input type="text" id="aiPromptInput" class="form-control"
+                                                        placeholder="Ask for advice..."
+                                                        value="Analyze my recent performance and suggest improvements.">
+                                                    <button class="btn btn-primary" id="aiAnalyzeBtn">
+                                                        <i class="bi bi-send-fill"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="text-muted small mt-1" style="font-size: 0.7rem;">
+                                                    analyzes recent trades, journals, and sessions.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Setup Modal (Non-dismissible) -->
+    <div class="modal fade" id="setupModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Welcome to Deriv Trader</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-4">To get started, please configure your Deriv API Token and Database
+                        connection.</p>
+                    <div class="mb-3">
+                        <label for="setupApiToken" class="form-label">Deriv API Token <span
+                                class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="setupApiToken"
+                            placeholder="Enter your API token">
+                        <div class="form-text">You can get this from your Deriv account settings.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="setupMongoUri" class="form-label">MongoDB URI</label>
+                        <input type="text" class="form-control" id="setupMongoUri" value="mongodb://localhost:27017"
+                            placeholder="mongodb://localhost:27017">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary w-100" id="saveSetupBtn">Save & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guide Modal -->
+    <div class="modal fade" id="guideModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-book-half me-2"></i> Quick Start Guide</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle p-2 fs-6">1</span>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="fw-bold">Select Strategy</h6>
+                                    <p class="text-muted small">Choose a trading strategy from the dropdown (e.g.,
+                                        Even/Odd, Rise/Fall).</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle p-2 fs-6">2</span>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="fw-bold">Configure Parameters</h6>
+                                    <p class="text-muted small">Set your Initial Stake, Target Profit, and Stop Loss
+                                        limits in the "Bot Control" panel.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle p-2 fs-6">3</span>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="fw-bold">Start Trading</h6>
+                                    <p class="text-muted small">Click the <span
+                                            class="text-success fw-bold">Start</span> button. The bot will begin
+                                        analyzing and trading automatically.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-primary rounded-circle p-2 fs-6">4</span>
+                                </div>
+                                <div class="ms-3">
+                                    <h6 class="fw-bold">Monitor & Stop</h6>
+                                    <p class="text-muted small">Watch the PnL graph and trade history. Click <span
+                                            class="text-danger fw-bold">Stop</span> at any time to halt trading.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info mt-3 mb-0 small">
+                        <i class="bi bi-info-circle me-1"></i> Tip: Use the <strong>Settings</strong> menu to update
+                        your API Token or Database connection later.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="settingApiToken" class="form-label">Deriv API Token</label>
+                        <input type="password" class="form-control" id="settingApiToken" placeholder="Enter your API token">
+                    </div>
+                    <div class="mb-3">
+                        <label for="settingMongoUri" class="form-label">MongoDB URI</label>
+                        <input type="text" class="form-control" id="settingMongoUri" placeholder="mongodb://localhost:27017">
+                    </div>
+                    <div class="mb-3">
+                        <label for="settingOpenAIKey" class="form-label">OpenAI API Key (Optional)</label>
+                        <input type="password" class="form-control" id="settingOpenAIKey" placeholder="sk-...">
+                    </div>
+                    <div class="mb-3">
+                        <label for="settingOpenAIModel" class="form-label">OpenAI Model</label>
+                        <select class="form-select" id="settingOpenAIModel">
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Fast & Cheap)</option>
+                            <option value="gpt-4-turbo">GPT-4 Turbo (Smart & Powerful)</option>
+                            <option value="gpt-4o">GPT-4o (Smartest & Powerful)</option>
+                            <option value="gpt-4">GPT-4 (Legacy)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Strategy Modal -->
+    <div class="modal fade" id="saveStrategyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Save Strategy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="strategyNameInput" class="form-label">Strategy Name</label>
+                        <input type="text" class="form-control" id="strategyNameInput" placeholder="my_strategy">
+                        <div class="form-text">Strategies are saved as .js files locally.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="strategyTagsInput" class="form-label">Tags (Optional)</label>
+                        <input type="text" class="form-control" id="strategyTagsInput"
+                            placeholder="trend, risky, scalping">
+                        <div class="form-text">Comma separated tags</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmSaveStrategyBtn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor View (Hidden by default) -->
+    <div id="editorView" class="container-fluid d-none" style="height: calc(100vh - 80px);">
+        <div class="row h-100 g-0">
+            <!-- Sidebar -->
+            <div class="col-3 h-100 border-end bg-body-tertiary d-flex flex-column">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold">My Strategies</h6>
+                    <button class="btn btn-sm btn-outline-primary" id="newStrategyBtn" title="New Strategy">
+                        <i class="bi bi-file-earmark-plus"></i>
+                    </button>
+                </div>
+                <div id="strategyList" class="list-group list-group-flush overflow-auto flex-grow-1">
+                    <!-- Strategy Items Inject Here -->
+                    <div class="text-center p-4 text-muted small">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Main Editor -->
+            <div class="col-9 h-100 d-flex flex-column">
+                <div class="p-2 border-bottom bg-body d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="currentStrategyName" class="fw-bold text-primary">Untitled</span>
+                        <span id="currentStrategyTags" class="badge bg-secondary rounded-pill d-none"></span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button id="aiStrategyBtn" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-stars"></i> Generate with AI
+                        </button>
+                        <button id="saveStrategyBtn" class="btn btn-primary btn-sm">
+                            <i class="bi bi-save"></i> Save
+                        </button>
+                        <button id="downloadStrategyBtn" class="btn btn-outline-secondary btn-sm" title="Download Code">
+                            <i class="bi bi-download"></i>
+                        </button>
+                        <button id="runScriptBtn" class="btn btn-success btn-sm">
+                            <i class="bi bi-play-fill"></i> Run
+                        </button>
+                        <button id="closeEditorBtn" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-x-lg"></i> Close
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-grow-1 position-relative">
+                    <div id="monaco-editor" class="position-absolute w-100 h-100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Strategy Generator Modal -->
+    <div class="modal fade" id="aiStrategyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info-subtle">
+                    <h5 class="modal-title"><i class="bi bi-stars me-2"></i>Generate Strategy with AI</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Describe your strategy logic in plain English. The AI will generate the
+                        Javascript code for you.</p>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Target Platform</label>
+                        <select class="form-select form-select-sm mb-3" id="aiStrategyMode">
+                            <option value="custom">Deriv Go Trader (Javascript)</option>
+                            <option value="dbot">Deriv DBot (XML)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">AI Model</label>
+                        <select class="form-select form-select-sm mb-3" id="aiStrategyModel">
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                            <option value="gpt-4o">GPT-4o</option>
+                            <option value="o1-preview">o1 Preview</option>
+                            <option value="o1-mini">o1 Mini</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" id="aiStrategyPrompt" rows="5"
+                            placeholder="Example: Buy CALL if the price increases 3 times in a row. Buy PUT if it drops 3 times in a row."></textarea>
+                    </div>
+                    <div id="aiStrategyError" class="alert alert-danger d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-info text-white" id="generateStrategyBtn">
+                        <i class="bi bi-magic me-1"></i> Generate Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Journal Entry Modal -->
+    <div class="modal fade" id="journalModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">New Journal Entry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="journalTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="journalTitle" placeholder="Session Review - 23 Oct">
+                    </div>
+                    <div class="mb-3">
+                        <label for="journalTags" class="form-label">Tags</label>
+                        <input type="text" class="form-control" id="journalTags"
+                            placeholder="profit, mistake, learning">
+                    </div>
+                    <div class="mb-3">
+                        <label for="journalContent" class="form-label">Content</label>
+                        <textarea class="form-control" id="journalContent" rows="10"
+                            placeholder="Write your thoughts here..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveJournalBtn">Save Entry</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="app.js?v=2"></script>
+</body>
+
+</html>
